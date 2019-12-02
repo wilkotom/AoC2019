@@ -14,35 +14,37 @@ func main() {
 	for !found {
 		for noun := 0; noun < 100; noun++ {
 			for verb:=0; verb<100; verb++ {
-				inputSlice := strings.Split(inputString, ",")
+				inputSlice := []int{}
+				for _, asciiNum := range strings.Split(inputString, ",") {
+					number, _ := strconv.Atoi(asciiNum)
+					inputSlice = append(inputSlice, number)
+				}
 				pos := 0
-				inputSlice[1] = strconv.Itoa(noun)
-				inputSlice[2] = strconv.Itoa(verb)
+				inputSlice[1] = noun
+				inputSlice[2] = verb
 				finished := false
 				dest := 0
 				num1 := 0
 				num2 := 0
 				for !finished {
-					instruction, _ := strconv.Atoi(inputSlice[pos])
+					instruction := inputSlice[pos]
 					if instruction == 99 {
 						finished = true
 					} else {
-						dest, _ = strconv.Atoi(inputSlice[pos +3])
-						pos1, _ := strconv.Atoi(inputSlice[pos +1])
-						pos2, _ := strconv.Atoi(inputSlice[pos +2])
-						num1, _ = strconv.Atoi(inputSlice[pos1])
-						num2, _ = strconv.Atoi(inputSlice[pos2])
+						dest = inputSlice[pos +3]
+						num1 = inputSlice[inputSlice[pos +1]]
+						num2 = inputSlice[inputSlice[pos +2]]
 					}
 					
 					if instruction == 1 {
-						inputSlice[dest] = strconv.Itoa(num1 + num2)
+						inputSlice[dest] = num1 + num2
 					
 					} else if instruction == 2 {
-						inputSlice[dest] = strconv.Itoa(num1 * num2)
+						inputSlice[dest] = num1 * num2
 					}
 					pos = pos + 4
 				}
-				if inputSlice[0] == "19690720" {
+				if inputSlice[0] == 19690720 {
 					fmt.Println(noun * 100 + verb)
 					found = true
 					break

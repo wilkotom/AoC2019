@@ -16,30 +16,12 @@ func main() {
 
 	for !found {
 		for noun := 0; noun < 100; noun++ {
-			for verb:=0; verb<100; verb++ {
+			for verb:= 0; verb < 100; verb++ {
 				inputSlice := make([]int, len(inputNumbers))
 				copy(inputSlice, inputNumbers)
-				pos := 0
 				inputSlice[1] = noun
 				inputSlice[2] = verb
-				finished := false
-				dest := 0
-				for !finished {
-					instruction := inputSlice[pos]
-					if instruction == 99 {
-						finished = true
-					} else {
-						dest = inputSlice[pos +3]
-					}
-					if instruction == 1 {
-						inputSlice[dest] = inputSlice[inputSlice[pos + 1]] + inputSlice[inputSlice[pos + 2]]
-					
-					} else if instruction == 2 {
-						inputSlice[dest] = inputSlice[inputSlice[pos + 1]] * inputSlice[inputSlice[pos + 2]]
-					}
-					pos = pos + 4
-				}
-				if inputSlice[0] == 19690720 {
+				if computeResult(inputNumbers) == 19690720 {
 					fmt.Println(noun * 100 + verb)
 					found = true
 					break
@@ -50,4 +32,26 @@ func main() {
 			}
 		}
 	}
+}
+
+func computeResult (inputSlice []int) int {
+	finished := false
+	pos := 0
+	dest := 0
+	for !finished {
+		instruction := inputSlice[pos]
+		if instruction == 99 {
+			finished = true
+		} else {
+			dest = inputSlice[pos +3]
+		}
+		if instruction == 1 {
+			inputSlice[dest] = inputSlice[inputSlice[pos + 1]] + inputSlice[inputSlice[pos + 2]]
+		
+		} else if instruction == 2 {
+			inputSlice[dest] = inputSlice[inputSlice[pos + 1]] * inputSlice[inputSlice[pos + 2]]
+		}
+		pos = pos + 4
+	}
+	return inputSlice[0]
 }

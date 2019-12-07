@@ -136,9 +136,6 @@ func computeResult (inputSlice []int, input, output chan int, identifier int, la
 	return 
 }
 
-func generateInputs(start, end int) []int {
-	return []int{}
-}
 
 func generateInputPermutations(inputs []int) [][]int {
 	outputs := [][]int{}
@@ -158,12 +155,4 @@ func generateInputPermutations(inputs []int) [][]int {
 	}
 	
 	return outputs
-}
-
-func numberSet(min, max int) []int {
-    a := make([]int, max-min+1)
-    for i := range a {
-        a[i] = min + i
-    }
-    return a
 }

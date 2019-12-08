@@ -18,44 +18,45 @@ func main() {
 	permutations := generateInputPermutations(stages)
 	bestResult := 0
 	bestPermutation := make([]int, len(stages))
-	inputs := make([]chan int, len(stages)+1)
-	lastinstructions := make([]int, len(stages))
-	for i := range inputs {
-		inputs[i] = make(chan int)
-	 }
+
 	for _, permutation := range permutations {
-		for i := 0; i < len(inputs) -1; i++ {
+		inputs := make([]chan int, len(stages))
+		controls := make([]chan struct{}, len(stages))
+		for i := range inputs {
+			inputs[i] = make(chan int)
+			controls[i] = make(chan struct{})
+		 }
+		for i := 0; i < len(inputs) ; i++ {
 			localInstrCopy := make([]int, len(inputNumbers))
 			copy(localInstrCopy, inputNumbers)
-			go computeResult(localInstrCopy, inputs[i], inputs[i+1], i, lastinstructions)
+			destination := i +1
+			if destination == len(inputs) {
+				destination = 0
+			}
+			go computeResult(localInstrCopy, inputs[i], inputs[destination], controls[i], i)
 			inputs[i] <- permutation[i]
 		}
 		inputs[0] <- 0
-		lastResult := <- inputs[len(stages)]
-		for lastinstructions[0] != 99 {
-			inputs[0] <- lastResult
-			lastResult = <- inputs[len(stages)]
-		}
-				 
+		<- controls[0] // if the first processor has closed its control channel, it will no longer consume input. What we have is the final answer
+		lastResult := <- inputs[0]
 		
 		if lastResult > bestResult {
 			bestResult = lastResult
-
 			copy(bestPermutation, permutation)
 		}
 	}
 	fmt.Println(bestPermutation, bestResult)
 }
 
-func computeResult (inputSlice []int, input, output chan int, identifier int, lastinstructions []int) {
+func computeResult (inputSlice []int, input, output chan int, control chan struct{}, id int) {
 	finished := false
 	pos := 0
 	for !finished {
 		// inputReader := bufio.NewReader(os.Stdin)
 		instruction := inputSlice[pos] % 100
 		// This is up here just in case 99 is the last instruction in the set - fetching args will give an out-of-bounds error
-		lastinstructions[identifier] = instruction
 		if instruction == 99 {
+			close(control)
 			return 
 		}
 		parameters := make([]int,3)
